@@ -1,5 +1,4 @@
-import Util.CSVFileWorker;
-import model.User;
+import util.CSVFileWorker;
 import repository.UserRepository;
 import service.UserService;
 
@@ -7,7 +6,7 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        CSVFileWorker csvFileWorker = new CSVFileWorker();
+        CSVFileWorker csvFileWorker = new CSVFileWorker("location", "name");
         UserRepository userRepository = new UserRepository(csvFileWorker);
         UserService userService = new UserService(userRepository);
 
