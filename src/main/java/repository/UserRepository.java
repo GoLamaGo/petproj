@@ -5,6 +5,7 @@ import model.User;
 import util.CSVFileWorker;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,7 +27,7 @@ public class UserRepository implements CrudRepository<User> {
         return user;
     }
 
-    public static String toCsvString(User user) {
+    public static String userToCsvString(User user) {
         return user.getId() + ";" +
                 user.getName() + ";" +
                 user.getLastname() + ";" +
@@ -36,38 +37,64 @@ public class UserRepository implements CrudRepository<User> {
     @Override
     public Optional<User> getById(Long id) throws IOException {
         List<User> allUsers = getAllUsers();
-        return Optional.empty();
+        return allUsers.stream()
+                .filter(user -> user.getId().equals(id))
+                .findFirst();
     }
 
     @Override
     public List<User> getAllUsers() throws IOException {
-        return csvFileWorker.readAllLines()
+        return csvFileWorker.readCsv()
                 .stream()
                 .map(UserRepository::scvLine2User)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public boolean deleteById(Long id) {
-        return false;
+    public boolean deleteById(Long id) throws IOException {
+        var users = getAllUsers();
+        List<String> csvStrings = new ArrayList<>();
+        boolean result = false;
+
+        if (users.stream().anyMatch(findUser -> findUser.getId().equals(id))) {
+            result = true;
+            csvStrings = users.stream()
+                    .filter(user -> !user.getId().equals(id))
+                    .map(UserRepository::userToCsvString).toList();
+            csvFileWorker.writeCsv(csvStrings);
+        }
+
+        return result;
     }
 
     @Override
     public User updateById(User withUser) throws IOException {
         List<User> allUsers = getAllUsers();
-        //find user
-        //updated
-        //list <- updated
-        //saveAll(list);
-        return null;
+
+        if (allUsers.contains(withUser)) {
+            var userIndex = allUsers.indexOf(withUser);
+            allUsers.get(userIndex).setName(withUser.getName());
+            allUsers.get(userIndex).setLastname(withUser.getLastname());
+            allUsers.get(userIndex).setUsername(withUser.getUsername());
+        }
+
+        return withUser;
     }
 
     @Override
-    public User add(User user) throws IOException {
-        String user2Csv = toCsvString(user);
-        csvFileWorker.writeCsv(user2Csv);
+    public synchronized List<User> add(List<User> users) throws IOException {
+        var allUsers = getAllUsers();
+        List<String> csvStrings = new ArrayList<>();
 
-        return user;
+        for (User user : users) {
+            if (!allUsers.contains(user)) {
+                users.add(user);
+                csvStrings = users.stream()
+                        .map(UserRepository::userToCsvString).toList();
+                csvFileWorker.writeCsv(csvStrings);
+            }
+        }
+        return allUsers;
     }
 
 }

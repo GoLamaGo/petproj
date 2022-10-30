@@ -10,10 +10,10 @@ public interface CrudRepository<T> {
 
     List<T> getAllUsers() throws IOException;
 
-    boolean deleteById(Long id);
+    boolean deleteById(Long id) throws IOException;
 
     T updateById(T t) throws IOException;
 
-    T add(T data) throws IOException;
+    List<T> add(List<T> data) throws IOException;
 
 }

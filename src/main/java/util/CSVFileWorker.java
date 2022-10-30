@@ -18,22 +18,7 @@ public class CSVFileWorker {
         }
     }
 
-    private BufferedReader makeFileReader() throws FileNotFoundException {
-        return new BufferedReader(new FileReader(file));
-    }
-
-    private BufferedWriter makeFileWriter() throws IOException {
-        return new BufferedWriter(new FileWriter(file, true));
-    }
-
-    public String readLine() throws IOException {
-        var fileReader = makeFileReader();
-        var result = fileReader.readLine();
-        fileReader.close();
-        return result;
-    }
-
-    public List<String> readAllLines() throws IOException {
+    public List<String> readCsv() throws IOException {
         List<String> list = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -45,10 +30,14 @@ public class CSVFileWorker {
         return list;
     }
 
-    public void writeCsv(String stringLine) throws IOException {
-        var fileWriter = makeFileWriter();
-        fileWriter.write(stringLine);
-        fileWriter.newLine();
+    public void writeCsv(List<String> stringLines) throws IOException {
+        var fileWriter = new BufferedWriter(new FileWriter(file));
+
+        for (String line : stringLines) {
+            fileWriter.write(line);
+            fileWriter.newLine();
+        }
+
         fileWriter.close();
     }
 

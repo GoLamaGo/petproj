@@ -13,13 +13,20 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public User addUser(User user) throws IOException {
-        return userRepository.add(user);
+    public List<User> addUser(List<User> users) {
+        try {
+            return userRepository.add(users);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public Optional<User> getById(int id) {
-//        userRepository
-        return null;
+    public Optional<User> getById(Long id) {
+        try {
+            return userRepository.getById(id);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<User> getAllUsers() {
@@ -29,5 +36,17 @@ public class UserService {
             e.printStackTrace();
         }
         return List.of();
+    }
+
+    public User updateById(User withUser) throws IOException {
+        return userRepository.updateById(withUser);
+    }
+
+    public boolean deleteUserById(Long id) {
+        try {
+            return userRepository.deleteById(id);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
