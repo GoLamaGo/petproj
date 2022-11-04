@@ -6,14 +6,14 @@ import java.util.Optional;
 
 public interface CrudRepository<T> {
 
-    Optional<T> getById(Long id) throws IOException;
+    T add(T data);
 
-    List<T> getAllUsers() throws IOException;
+    Optional<T> getById(Long id);
 
-    boolean deleteById(Long id) throws IOException;
+    List<T> getAllUsers();
 
-    T updateById(T t) throws IOException;
+    T updateById(T t);
 
-    List<T> add(List<T> data) throws IOException;
+    boolean deleteById(Long id);
 
 }

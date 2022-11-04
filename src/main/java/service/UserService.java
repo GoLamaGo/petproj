@@ -13,40 +13,33 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public List<User> addUser(List<User> users) {
-        try {
-            return userRepository.add(users);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public User addUser(User user) {
+        return userRepository.add(user);
     }
 
-    public Optional<User> getById(Long id) {
-        try {
-            return userRepository.getById(id);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public List<User> addUsers(List<User> users) {
+        return userRepository.addUsers(users);
+    }
+
+    public User getById(Long id) {
+//        return userRepository.getById(id).orElseThrow(IllegalArgumentException::new);
+        if (userRepository.getById(id).isPresent()) {
+            return userRepository.getById(id).get();
+        } else {
+            System.out.println("Пользователь с таким id не найден");
+            return null;
         }
     }
 
     public List<User> getAllUsers() {
-        try {
-            return userRepository.getAllUsers();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return List.of();
+        return userRepository.getAllUsers();
     }
 
-    public User updateById(User withUser) throws IOException {
-        return userRepository.updateById(withUser);
+    public User updateById(User user) {
+        return userRepository.updateById(user);
     }
 
     public boolean deleteUserById(Long id) {
-        try {
-            return userRepository.deleteById(id);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return userRepository.deleteById(id);
     }
 }

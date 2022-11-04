@@ -3,13 +3,19 @@ import util.CSVFileWorker;
 import repository.UserRepository;
 import service.UserService;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        CSVFileWorker csvFileWorker = new CSVFileWorker("src/main/resources/", "users.csv");
+
+    public static void main(String[] args) {
+        String csvFileLocation = "src/main/resources/";
+        String csvFileName = "users.csv";
+
+        File file = CSVFileWorker.createFile(csvFileLocation, csvFileName);
+        CSVFileWorker csvFileWorker = new CSVFileWorker(file);
         UserRepository userRepository = new UserRepository(csvFileWorker);
         UserService userService = new UserService(userRepository);
 
@@ -36,18 +42,20 @@ public class Main {
                         .build()
         ));
 
-        var addUsers = userService.addUser(newUsers);
+        var add1User = userService.addUser(newUsers.get(0));
+        var addUsers = userService.addUsers(newUsers);
         var usersInFile = userService.getAllUsers();
         var deleteUser = userService.deleteUserById(userId2Delete);
 
-        var user4Change = usersInFile.stream().findAny().get();
+        var user4Change = usersInFile.stream().findAny().get(); //TODO как isPresent красиво обрабатывать?
         user4Change.setName("ChangedName");
         var updateUser = userService.updateById(user4Change);
+        var getUser = userService.getById(999L);
 
         var updateUnknownUser = userService.updateById(new User());
 
+        System.out.println("add 1 user: " + add1User.toString());
         System.out.println("add users : " + addUsers.toString());
-//        addUsers.forEach(System.out::println);      // TODO Exception in thread "main" java.util.ConcurrentModificationException
         System.out.println("all users: " + usersInFile.toString());
         System.out.println("delete user : " + deleteUser);
         System.out.println("update user : " + updateUser.toString());
